@@ -27,7 +27,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang='ts'>
   import { h } from 'vue'
   import { NAvatar, NDropdown, NIcon } from 'naive-ui'
   import {

@@ -18,7 +18,7 @@
   <div></div>
 </template>
 
-<script setup>
+<script setup lang='ts'>
   import { NLayout } from 'naive-ui'
   import Sidebar from './sidebar.vue'
   import NavigationBar from './navigationBar.vue'

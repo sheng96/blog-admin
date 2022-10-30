@@ -88,6 +88,7 @@
   import 'vditor/dist/index.css'
   import { creatTagApi, getTagAllApi } from '@/api/tag'
   import { creatPostApi } from '@/api/post'
+  import { statusEnum } from '@/api/model/postModel'
 
   const bodyStyle = {
     width: '600px'
@@ -146,8 +147,8 @@
       content: vditor.value?.getValue() as string,
       contentHtml: vditor.value?.getHTML() as string,
       summary: '这是一段测试摘要',
-      status: 'draft',
-      tags:[...new Set([...tagId,...newTagId])]
+      status: statusEnum.draft,
+      tags: [...new Set([...tagId, ...newTagId])]
     })
     console.log(tagId, tagName)
     console.log(vditor.value?.getValue())
