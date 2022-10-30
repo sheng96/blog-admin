@@ -3,7 +3,7 @@ RUN npm i pnpm -g
 WORKDIR /app
 COPY . .
 RUN pnpm i
-RUN npm run build
+RUN pnpm run build
 
 FROM nginx:stable-alpine
 COPY ../default.conf /etc/nginx/conf.d/default.conf
