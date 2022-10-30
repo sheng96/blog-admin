@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Login from '../views/auth/index.vue'
 import Layout from '../components/layout/index.vue'
 
@@ -74,6 +74,6 @@ export const constantRoutes: RouteRecordRaw[] = [
   }
 ]
 export default createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes: [...basicRoutes, ...constantRoutes]
 })
