@@ -19,7 +19,7 @@
                 <n-icon
                   :component="UserAddOutlined"
                   color="#2080f0"
-                  @click="isLogin = fasle"
+                  @click="isLogin = false"
                 />
               </div>
             </UserLogin>
@@ -47,7 +47,7 @@
 
 <style lang="scss" scoped>
   .login {
-    background-image: url('../../assets/bg-login.png');
+    background-image: url('../../assets/bg-login.jpg');
     background-repeat: no-repeat;
     background-size: cover;
   }
