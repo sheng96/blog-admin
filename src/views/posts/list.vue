@@ -1,8 +1,8 @@
 <template>
   <div class="m-4 border-r-2 bg-white p-2"> 文章列表</div>
   <n-data-table
-    remote
     ref="table"
+    remote
     :columns="columns"
     :data="data"
     :loading="loading"
@@ -12,27 +12,31 @@
   />
 </template>
 <script setup lang="ts">
-  import { ref, reactive, h, onBeforeMount } from 'vue'
-  import { NDataTable, NButton, NTag } from 'naive-ui'
+  import { h, onBeforeMount, reactive, ref } from 'vue'
+  import { DataTableColumn, NButton, NDataTable, NTag } from 'naive-ui'
   import { postAllApi } from '@/api/post'
-  const columns = [
+
+  const columns: Array<DataTableColumn> = [
     {
       type: 'selection'
     },
     {
       title: '标题',
+      align: 'center',
       key: 'title'
     },
     {
       title: '状态',
+      align: 'center',
       key: 'status'
     },
     {
       title: '标签',
-      width: 90,
+      width: 140,
+      align: 'center',
       key: 'tags',
       render(row) {
-        const tags = row.tags.map((tagKey) => {
+        return (row.tags as string[]).map((tagKey) => {
           return h(
             NTag,
             {
@@ -49,21 +53,23 @@
             }
           )
         })
-        return tags
       }
     },
     {
       title: '访问',
+      align: 'center',
       key: 'count'
     },
     {
       title: '创建时间',
+      align: 'center',
       key: 'creatTime'
     },
     {
       title: '操作',
+      align: 'center',
       key: 'auth',
-      render(row) {
+      render() {
         return [
           h(
             NButton,
@@ -79,7 +85,10 @@
             NButton,
             {
               size: 'tiny',
-              text:true
+              type: 'error',
+              style: {
+                marginLeft: '2px'
+              }
             },
             {
               default: () => '删除'
@@ -90,11 +99,12 @@
     }
   ]
   const data = ref([])
-  const pagination = reactive({
-    page: 2,
-    pageCount: 10,
-    pageSize: 10
-  })
+  const pagination: { page: number; pageCount: number; pageSize: number } =
+    reactive({
+      page: 2,
+      pageCount: 10,
+      pageSize: 10
+    })
   const loading = ref(false)
   onBeforeMount(async () => {
     loading.value = true
@@ -104,9 +114,9 @@
     pagination.pageSize = res.data.total
     loading.value = false
   })
-  const rowKey = (e) => e.id
+  const rowKey = (e: { id: string }): number | string => e.id
 
-  const handlePageChange = (e) => {
+  const handlePageChange = (e: any) => {
     console.log(e)
   }
 </script>

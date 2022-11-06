@@ -35,7 +35,7 @@
           :label-width="84"
           label-placement="left"
           label-align="left"
-          :size="size"
+          size="large"
         >
           <n-form-item label="文章标题：" path="user.name">
             <n-input v-model:value="title" placeholder="文章标题" />
@@ -49,7 +49,6 @@
               tag
               :options="options"
               placeholder="请选择"
-              @update:value="change"
             />
           </n-form-item>
           <n-form-item label="摘要：" path="user.name">

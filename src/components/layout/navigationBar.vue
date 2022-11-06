@@ -27,8 +27,8 @@
   </div>
 </template>
 
-<script setup lang='ts'>
-  import { h } from 'vue'
+<script setup lang="ts">
+  import { Component, h } from 'vue'
   import { NAvatar, NDropdown, NIcon } from 'naive-ui'
   import {
     BellOutlined,
@@ -41,7 +41,7 @@
 
   const userStore = userMenuStore()
 
-  function renderIcon(icon) {
+  function renderIcon(icon: Component) {
     return () => h(NIcon, null, { default: () => h(icon) })
   }
 
@@ -57,7 +57,7 @@
       key: 'outLogin'
     }
   ]
-  const handleSelect = (e) => {
+  const handleSelect = (e: any) => {
     console.log(e)
   }
 </script>

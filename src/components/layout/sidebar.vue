@@ -41,7 +41,7 @@
   import { userMenuStore } from '@/store/modules/app'
   import router, { constantRoutes } from '@/router'
 
-  const defaultValue = ref(router.currentRoute.value.name)
+  const defaultValue = ref(router.currentRoute.value.name as string)
   const menus = constantRoutes.filter(
     (route) => route.name && !route.meta?.isHidden
   )
