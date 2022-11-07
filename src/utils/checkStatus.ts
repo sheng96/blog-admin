@@ -1,7 +1,7 @@
 import { userStore } from '@/store/modules/user'
 
 export function checkStatus(status: number, message: string): void {
-  let errMessage = ''
+  let errMessage: string
   const user = userStore()
   switch (status) {
     case 400:
