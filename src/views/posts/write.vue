@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-between mb-2">
-    <div class="text-xl text-black">{{ title }}</div>
+    <div class="text-xl text-black">{{ postForm.title }}</div>
     <div>
       <NButton>预览</NButton>
       <NButton type="info" class="ml-2" @click="showModal = true">
@@ -10,7 +10,7 @@
   </div>
   <div class="h-full">
     <NInput
-      v-model:value="title"
+      v-model:value="postForm.title"
       type="text"
       placeholder="请输入标题"
       size="large"
@@ -38,7 +38,7 @@
           size="large"
         >
           <n-form-item label="文章标题：" path="user.name">
-            <n-input v-model:value="title" placeholder="文章标题" />
+            <n-input v-model:value="postForm.title" placeholder="文章标题" />
           </n-form-item>
           <n-form-item label="标签：" path="user.name">
             <n-select
@@ -53,7 +53,7 @@
           </n-form-item>
           <n-form-item label="摘要：" path="user.name">
             <n-input
-              v-model:value="title"
+              v-model:value="postForm.summary"
               type="textarea"
               placeholder="文章标题"
             />
@@ -82,7 +82,7 @@
     NFormItem,
     NSelect
   } from 'naive-ui'
-  import { onMounted, ref } from 'vue'
+  import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
   import Editor from 'vditor'
   import 'vditor/dist/index.css'
   import { creatTagApi, getTagAllApi } from '@/api/tag'
@@ -107,12 +107,15 @@
   }
   getTag()
 
-  const title = ref('这是一个标题默认值')
-  const vditor = ref<Editor | null>(null)
+  const postForm = reactive({
+    title: '',
+    summary: ''
+  })
 
+  const vditor = ref<Editor | null>(null)
   onMounted(() => {
     vditor.value = new Editor('editor', {
-      height: '90%',
+      height: '33.2rem',
       toolbarConfig: {
         pin: true
       },
@@ -124,6 +127,10 @@
       },
       after: () => {}
     })
+  })
+  onBeforeUnmount(() => {
+    let dom = document.querySelector('#editor') as HTMLDivElement
+    dom.innerHTML = ''
   })
 
   async function submit() {
@@ -149,27 +156,13 @@
       status: statusEnum.draft,
       tags: [...new Set([...tagId, ...newTagId])]
     })
-    console.log(tagId, tagName)
-    console.log(vditor.value?.getValue())
-    console.log(vditor.value?.getHTML())
+    showModal.value = false
   }
 </script>
 
-<style scoped lang="scss">
-  .mavonEditor {
-    width: 100%;
-    height: 100%;
-  }
-</style>
 <style>
   ol,
   ul {
     list-style: null;
   }
-
-  /*#editor {*/
-  /*  margin: auto;*/
-  /*  width: 80%;*/
-  /*  !*height: 980px;*!*/
-  /*}*/
 </style>
