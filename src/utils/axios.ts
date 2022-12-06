@@ -4,7 +4,9 @@ import { userStore } from '@/store/modules/user'
 import { checkStatus } from '@/utils/checkStatus'
 
 const instance = axios.create({
-  baseURL: '',
+  baseURL: import.meta.env.PROD
+    ? import.meta.env.VITE_BASE_URL
+    : 'http://127.0.0.1:8888',
   timeout: 10000
 })
 instance.interceptors.request.use(
