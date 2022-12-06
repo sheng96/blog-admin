@@ -1,30 +1,30 @@
 <template>
   <NLayoutSider
-    :collapsed="userStore.collapsed"
+    :collapsed="menuStore.collapsed"
     :inverted="true"
     :default-collapsed="true"
     bordered
     width="200"
     class="h-96 menu"
     collapse-mode="width"
-    @collapse="userStore.collapsed = true"
-    @expand="userStore.collapsed = false"
+    @collapse="menuStore.collapsed = true"
+    @expand="menuStore.collapsed = false"
   >
     <h1 class="logo">
       <img
-        v-show="userStore.collapsed === false"
+        v-show="menuStore.collapsed === false"
         src="../../../public/logo.png"
         alt="首页"
       />
       <img
-        v-show="userStore.collapsed === true"
+        v-show="menuStore.collapsed === true"
         src="../../../public/logo-icon.png"
         alt="首页"
       />
     </h1>
     <NMenu
-      v-model:value="defaultValue"
-      :collapsed="userStore.collapsed"
+      v-model:value="menuStore.selectMenu"
+      :collapsed="menuStore.collapsed"
       :collapsed-icon-size="22"
       :inverted="true"
       :options="menuOptions"
@@ -41,18 +41,18 @@
   import { userMenuStore } from '@/store/modules/app'
   import router, { constantRoutes } from '@/router'
 
-  const defaultValue = ref(router.currentRoute.value.name as string)
   const menus = constantRoutes.filter(
     (route) => route.name && !route.meta?.isHidden
   )
   const menuOptions = computed(() => menus.map((item) => getMenuItem(item)))
-  console.log(menuOptions)
 
   function renderIcon(icon: Component) {
     return () => h(NIcon, null, { default: () => h(icon) })
   }
 
-  const userStore = userMenuStore()
+  const menuStore = userMenuStore()
+  // const defaultValue =
+  //   menuStore.selectMenu || ref(router.currentRoute.value.name as string)
 
   function getMenuItem(route: RouteRecordRaw, basePath = ''): MenuOption {
     let menuItem: MenuOption = {

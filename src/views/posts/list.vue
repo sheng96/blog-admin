@@ -13,8 +13,18 @@
 </template>
 <script setup lang="ts">
   import { h, onBeforeMount, reactive, ref } from 'vue'
-  import { DataTableColumn, NButton, NDataTable, NTag } from 'naive-ui'
-  import { postAllApi } from '@/api/post'
+  import {
+    DataTableColumn,
+    NButton,
+    NDataTable,
+    NTag,
+    NPopconfirm
+  } from 'naive-ui'
+  import { deletePostApi, postAllApi } from '@/api/post'
+  import { RouterLink } from 'vue-router'
+  import dayjs from 'dayjs'
+  import { postAllModel } from '@/api/model/postModel'
+  import { PostStatusName } from '@/common/post-status'
 
   const columns: Array<DataTableColumn> = [
     {
@@ -69,36 +79,55 @@
       title: '操作',
       align: 'center',
       key: 'auth',
-      render() {
+      render(row) {
         return [
           h(
-            NButton,
+            RouterLink,
             {
-              size: 'tiny',
-              type: 'info'
+              to: './write?id=' + row.id
             },
-            {
-              default: () => '编辑'
-            }
+            () =>
+              h(
+                NButton,
+                {
+                  size: 'tiny',
+                  type: 'info'
+                },
+                {
+                  default: () => '编辑'
+                }
+              )
           ),
           h(
-            NButton,
+            NPopconfirm,
             {
-              size: 'tiny',
-              type: 'error',
-              style: {
-                marginLeft: '2px'
+              onPositiveClick() {
+                del(row.id as string)
               }
             },
             {
-              default: () => '删除'
+              default: () => '确定删除吗？',
+              trigger: () =>
+                h(
+                  NButton,
+                  {
+                    size: 'tiny',
+                    type: 'error',
+                    style: {
+                      marginLeft: '2px'
+                    }
+                  },
+                  {
+                    default: () => '删除'
+                  }
+                )
             }
           )
         ]
       }
     }
   ]
-  const data = ref([])
+  const data = ref<any[]>([])
   const pagination: { page: number; pageCount: number; pageSize: number } =
     reactive({
       page: 2,
@@ -109,7 +138,11 @@
   onBeforeMount(async () => {
     loading.value = true
     const res = await postAllApi()
-    data.value = res.data.data
+    data.value = res.data.data.map((item: postAllModel) => {
+      item.status = PostStatusName[item.status] as any
+      item.creatTime = dayjs(item.creatTime).format('YYYY-MM-DD HH:mm:ss')
+      return item
+    })
     pagination.pageCount = res.data.pageTotal
     pagination.pageSize = res.data.total
     loading.value = false
@@ -118,6 +151,11 @@
 
   const handlePageChange = (e: any) => {
     console.log(e)
+  }
+
+  const del = async (id: string) => {
+    await deletePostApi(id)
+    window.$message.success('删除成功')
   }
 </script>
 

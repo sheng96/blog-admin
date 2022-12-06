@@ -37,7 +37,7 @@
     MenuUnfoldOutlined,
     SettingOutlined
   } from '@vicons/antd'
-  import { userMenuStore } from '../../store/modules/app'
+  import { userMenuStore } from '@/store/modules/app'
 
   const userStore = userMenuStore()
 
