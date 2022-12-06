@@ -1,19 +1,15 @@
 <template>
   <div class="flex pt-1">
-    <div v-for="item in tagsTitle" :key="item" class="card-box pr-2">
+    <div v-for="(item, key) in statistical" :key="key" class="card-box pr-2">
       <NCard
-        :title="item"
+        :title="tagsTitle[key]"
         content-style="font-size:30px;font-weight:700px"
         header-style="font-size:14px"
       >
         <template #header-extra>
           <NIcon :component="PlusOutlined"></NIcon>
         </template>
-        <n-number-animation
-          ref="numberAnimationInstRef"
-          :from="0"
-          :to="12039"
-        />
+        <n-number-animation ref="numberAnimationInstRef" :from="0" :to="item" />
       </NCard>
     </div>
   </div>
@@ -56,10 +52,18 @@
     NTabs
   } from 'naive-ui'
   import { PlusOutlined } from '@vicons/antd'
-  import { ref } from 'vue'
+  import { reactive, ref } from 'vue'
+  import { getStatisticalApi } from '@/api/home'
 
-  const tagsTitle = ['文章', '评论', '阅读量', '建立天数']
+  const tagsTitle = {
+    post: '文章',
+    user: '用户',
+    pageView: '阅读量',
+    comment: '评论量'
+  }
   const value = ref('')
+  const res = await getStatisticalApi()
+  const statistical = reactive(res.data)
 </script>
 
 <style scoped lang="scss">
