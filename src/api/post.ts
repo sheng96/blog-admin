@@ -1,11 +1,14 @@
 import http from '@/utils/axios'
-import { statusEnum } from '@/api/model/postModel'
-import { BasicPageParams } from '@/api/model/baseModel'
+import { postAllModel, statusEnum } from '@/api/model/postModel'
+import { BasicPageParams, PagesBaseModel } from '@/api/model/baseModel'
 
-export const postAllApi = async (params: BasicPageParams = {}) =>
-  await http.get('/api/post', {
+export const postAllApi = async (
+  params: BasicPageParams = {}
+): Promise<PagesBaseModel<postAllModel[]>> =>
+  await http.get('/post', {
     params
   })
+export const postDetailApi = async (id: string) => await http.get(`/post/${id}`)
 
 interface creat {
   title: string
@@ -17,4 +20,14 @@ interface creat {
 }
 
 export const creatPostApi = async (data: creat) =>
-  await http.post('/api/post', data)
+  await http.post('/post', data)
+
+export const deletePostApi = async (id: string) =>
+  await http.delete(`/post/${id}`)
+
+export const uploadImagesApi = async (data: FormData) =>
+  await http.post('/post/upload', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })

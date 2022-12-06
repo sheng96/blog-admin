@@ -7,10 +7,10 @@ type dataRegister = {
   email: string
 }
 
-export const checkTokenApi = async () => await http.get('/api/auth/checkToken')
+export const checkTokenApi = async () => await http.get('/auth/checkToken')
 
 export const registerApi = async (data: dataRegister) =>
-  await http.post('/api/user/register', data)
+  await http.post('/user/register', data)
 
 type dataLogin = {
   userName: string
@@ -20,7 +20,7 @@ type dataLogin = {
 export const loginApi = async (
   data: dataLogin
 ): Promise<{ data: { token: string } }> =>
-  await http.post('/api/auth/login', data)
+  await http.post('/auth/login', data)
 
 export const getUserInfoApi = async () =>
-  await http.get('/api/user/getUserInfo')
+  await http.get('/user/getUserInfo')
