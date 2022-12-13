@@ -22,6 +22,9 @@ interface creat {
 export const creatPostApi = async (data: creat) =>
   await http.post('/post', data)
 
+export const updatePostApi = async (id: string, data: creat) =>
+  await http.patch(`/post/${id}`, data)
+
 export const deletePostApi = async (id: string) =>
   await http.delete(`/post/${id}`)
 

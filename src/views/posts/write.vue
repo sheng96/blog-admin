@@ -96,7 +96,12 @@
   import { onMounted, reactive, ref } from 'vue'
 
   import { creatTagApi, getTagAllApi } from '@/api/tag'
-  import { creatPostApi, postDetailApi, uploadImagesApi } from '@/api/post'
+  import {
+    creatPostApi,
+    postDetailApi,
+    updatePostApi,
+    uploadImagesApi
+  } from '@/api/post'
   import { statusEnum } from '@/api/model/postModel'
   import { useRoute } from 'vue-router'
   import { userStore } from '@/store/modules/user'
@@ -129,7 +134,6 @@
     mediumZoom()
   ]
   const uploadImages = async (files: File[]) => {
-    console.log(files)
     let formData = new FormData()
     formData.append('files', files[0])
     let res: any = await uploadImagesApi(formData)
@@ -198,14 +202,21 @@
     })
     const newTags = await creatTagApi([...new Set(tagName)])
     let newTagId = newTags.data.map((item) => item.id)
-    await creatPostApi({
+    console.log(tagId)
+    let data = {
       title: postForm.title,
       content: postForm.content,
       contentHtml: '',
       summary: postForm.summary,
-      status: statusEnum[status],
+      status: status,
       tags: [...new Set([...tagId, ...newTagId])]
-    })
+    }
+    if (route.query.id) {
+      await updatePostApi(route.query.id as string, data)
+    } else {
+      await creatPostApi(data)
+    }
+
     showModal.value = false
   }
 </script>
@@ -220,5 +231,4 @@
   :deep(.markdown-body) ol li {
     list-style: decimal;
   }
-
 </style>
