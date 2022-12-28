@@ -104,7 +104,6 @@
   } from '@/api/post'
   import { statusEnum } from '@/api/model/postModel'
   import { useRoute } from 'vue-router'
-  import { userStore } from '@/store/modules/user'
 
   import { Editor } from '@bytemd/vue-next'
   import breaks from '@bytemd/plugin-breaks'
@@ -145,9 +144,6 @@
       }
     })
   }
-
-  const store = userStore()
-
   const bodyStyle = {
     width: '600px'
   }
