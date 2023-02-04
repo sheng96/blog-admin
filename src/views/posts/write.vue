@@ -71,10 +71,10 @@
     </n-tabs>
     <template #footer>
       <div class="flex align-middle justify-end">
-        <NButton type="warning" @click="submit(statusEnum.draft)"
+        <NButton type="warning" @click="submit(statusEnum.DRAFT)"
           >保存草稿</NButton
         >
-        <NButton class="ml-2" type="info" @click="submit(statusEnum.publish)"
+        <NButton class="ml-2" type="info" @click="submit(statusEnum.PUBLISH)"
           >发布</NButton
         >
       </div>
@@ -185,19 +185,14 @@
 
   async function submit(status: statusEnum) {
     let tagId: number[] = []
-    let tagName: string[] = []
-    selectValue.value.forEach((item) => {
+    for (const item of selectValue.value) {
       if (typeof item === 'string') {
-        let obj = options.value.find((value) => value.label === item)
-        if (!obj) {
-          tagName.push(item)
-        }
+        const newTags = await creatTagApi(item)
+        tagId.push(newTags.data.id)
       } else {
         tagId.push(item)
       }
-    })
-    const newTags = await creatTagApi([...new Set(tagName)])
-    let newTagId = newTags.data.map((item) => item.id)
+    }
     console.log(tagId)
     let data = {
       title: postForm.title,
@@ -205,7 +200,7 @@
       contentHtml: '',
       summary: postForm.summary,
       status: status,
-      tags: [...new Set([...tagId, ...newTagId])]
+      tags: tagId
     }
     if (route.query.id) {
       await updatePostApi(route.query.id as string, data)

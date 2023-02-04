@@ -1,15 +1,18 @@
 <template>
   <div class="m-4 border-r-2 bg-white p-2"> 文章列表</div>
-  <n-data-table
-    ref="table"
-    remote
-    :columns="columns"
-    :data="data"
-    :loading="loading"
-    :pagination="pagination"
-    :row-key="rowKey"
-    @update:page="handlePageChange"
-  />
+  <div class="bg-white pb-2">
+    <n-data-table
+      max-height="66vh"
+      ref="table"
+      remote
+      :columns="columns"
+      :data="data"
+      :loading="loading"
+      :pagination="pagination"
+      :row-key="rowKey"
+      @update:page="handlePageChange"
+    />
+  </div>
 </template>
 <script setup lang="ts">
   import { h, onBeforeMount, reactive, ref } from 'vue'
@@ -130,14 +133,30 @@
   const data = ref<any[]>([])
   const pagination: { page: number; pageCount: number; pageSize: number } =
     reactive({
-      page: 2,
       pageCount: 10,
       pageSize: 10
     })
   const loading = ref(false)
   onBeforeMount(async () => {
+    await getPostAll(1)
+  })
+  const rowKey = (e: { id: string }): number | string => e.id
+
+  const handlePageChange = async(e: number) => {
+    await getPostAll(e)
+  }
+
+  const del = async (id: string) => {
+    await deletePostApi(id)
+    window.$message.success('删除成功')
+    await getPostAll(1)
+  }
+  const getPostAll = async (page: number) => {
     loading.value = true
-    const res = await postAllApi()
+    const res = await postAllApi({
+      page,
+      size: 50
+    })
     data.value = res.data.data.map((item: postAllModel) => {
       item.status = PostStatusName[item.status] as any
       item.creatTime = dayjs(item.creatTime).format('YYYY-MM-DD HH:mm:ss')
@@ -146,17 +165,11 @@
     pagination.pageCount = res.data.pageTotal
     pagination.pageSize = res.data.total
     loading.value = false
-  })
-  const rowKey = (e: { id: string }): number | string => e.id
-
-  const handlePageChange = (e: any) => {
-    console.log(e)
-  }
-
-  const del = async (id: string) => {
-    await deletePostApi(id)
-    window.$message.success('删除成功')
   }
 </script>
 
-<style scoped></style>
+<style scoped>
+  :deep(.n-pagination) {
+    padding-right: 10px;
+  }
+</style>

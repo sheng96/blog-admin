@@ -3,6 +3,7 @@
 import { defineStore } from 'pinia'
 import { useStorage } from '@vueuse/core'
 import { getUserInfoApi } from '@/api/user'
+import router from '@/router/index'
 
 const token = useStorage('token', '')
 console.log(token, 1)
@@ -23,6 +24,7 @@ export const userStore = defineStore({
     logout() {
       this.token = ''
       this.user = {}
+      router.push({ path: '/login' })
     },
     async setUser() {
       this.user = await getUserInfoApi().then((r) => r.data)

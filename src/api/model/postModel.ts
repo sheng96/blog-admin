@@ -1,6 +1,6 @@
 export enum statusEnum {
-  draft="draft",
-  publish="draft"
+  DRAFT = 'DRAFT',
+  PUBLISH = 'PUBLISH'
 }
 
 export interface UserModel {

@@ -123,9 +123,7 @@
             store.setToken(res.data.token)
             await store.setUser()
             window.$message.success('登录成功')
-            await router.replace(
-              (route.query.redorect as string) || '/dashboard'
-            )
+            await router.replace(route.redirectedFrom?.fullPath || '/dashboard')
           }
         }
       }

@@ -41,7 +41,6 @@
   import { NIcon } from 'naive-ui'
   import { UserAddOutlined } from '@vicons/antd'
   import { ref } from 'vue'
-
   let isLogin = ref(true)
 </script>
 

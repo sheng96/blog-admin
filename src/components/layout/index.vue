@@ -30,7 +30,7 @@
     height: 100vh;
 
     .menu {
-      height: 100vh;
+      min-height: 100vh;
     }
 
     .header {
@@ -47,6 +47,8 @@
   }
 
   .content {
+    width: calc(100% - 200px);
+    overflow: hidden;
     background-color: #f0f2f5;
     flex: 1;
   }

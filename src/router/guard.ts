@@ -13,10 +13,9 @@ export function setupRouterGuard(router: Router) {
       document.title = to.meta.title
     }
     if (!user.token && !basicRoutes.find((item) => item.name === to.name)) {
-      return `login?redirect=${to.path}`
+      return `login`
     } else {
       menu.selectMenu = to.name as string
-      // console.log(menu.selectMenu)
       return true
     }
   })
