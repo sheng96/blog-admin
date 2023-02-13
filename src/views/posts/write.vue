@@ -103,7 +103,7 @@
     uploadImagesApi
   } from '@/api/post'
   import { statusEnum } from '@/api/model/postModel'
-  import { useRoute } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
 
   import { Editor } from '@bytemd/vue-next'
   import breaks from '@bytemd/plugin-breaks'
@@ -183,6 +183,8 @@
     postForm.content = value
   }
 
+  //路由api
+  const router = useRouter()
   async function submit(status: statusEnum) {
     let tagId: number[] = []
     for (const item of selectValue.value) {
@@ -193,7 +195,6 @@
         tagId.push(item)
       }
     }
-    console.log(tagId)
     let data = {
       title: postForm.title,
       content: postForm.content,
@@ -209,6 +210,13 @@
     }
 
     showModal.value = false
+    // useMessage
+    window.$message.success('提交成功', {
+      //弹出关闭后开始跳转页面
+      onLeave: () => {
+        router.replace({ name: 'list' })
+      }
+    })
   }
 </script>
 
