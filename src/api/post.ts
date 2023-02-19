@@ -3,7 +3,11 @@ import { postAllModel, statusEnum } from '@/api/model/postModel'
 import { BasicPageParams, PagesBaseModel } from '@/api/model/baseModel'
 
 export const postAllApi = async (
-  params: BasicPageParams = {}
+  params: BasicPageParams & {
+    keyword?: string
+    status?: string
+    tag?: number
+  } = {}
 ): Promise<PagesBaseModel<postAllModel[]>> =>
   await http.get('/post', {
     params
