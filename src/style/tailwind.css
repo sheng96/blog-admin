@@ -1,0 +1,11 @@
+@tailwind base;
+
+
+@layer base{
+    /*noinspection ALL*/
+    .n-button{
+       background-color: var(--n-color);
+   }
+}
+@tailwind components;
+@tailwind utilities;

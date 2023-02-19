@@ -1,21 +1,40 @@
 <script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import HelloWorld from './components/HelloWorld.vue'
+  import {
+    dateZhCN,
+    NConfigProvider,
+    NDateLocale,
+    NLocale,
+    zhCN
+  } from 'naive-ui'
+  // import './style/tailwind.css'
+
+  import NaiveProvider from './components/common/Message.vue'
+  import { reactive, ref } from 'vue'
+  import { checkTokenApi } from '@/api/user'
+
+  const themeOverrides = reactive({
+    common: {
+      primaryColor: '#409eff',
+      primaryColorHover: '#409eff'
+    }
+  })
+  const locale = ref<NLocale | null>(null)
+  locale.value = zhCN
+  const dateLocale = ref<NDateLocale | null>(null)
+  dateLocale.value = dateZhCN
+  checkTokenApi()
 </script>
 
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Hello Vue 3 + TypeScript + Vite" />
+  <NConfigProvider
+    :theme-overrides="themeOverrides"
+    :locale="locale"
+    :date-locale="dateLocale"
+  >
+    <NaiveProvider>
+      <router-view />
+    </NaiveProvider>
+  </NConfigProvider>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style></style>
