@@ -8,7 +8,7 @@ export const postAllApi = async (
     status?: string
     tag?: number
   } = {}
-): Promise<PagesBaseModel<postAllModel[]>> =>
+): Promise<PagesBaseModel<postAllModel>> =>
   await http.get('/post', {
     params
   })

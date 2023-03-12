@@ -5,9 +5,9 @@
         v-model:value="keyword"
         :style="{ width: '80%' }"
         placeholder="请输入搜索标题"
-        @keyup.enter="getPostAll(1)"
+        @keyup.enter="getUserList(1)"
       />
-      <n-button type="primary" @click="getPostAll(1)"> 搜索 </n-button>
+      <n-button type="primary" @click="getUserList(1)"> 搜索 </n-button>
     </n-input-group>
   </div>
   <div class="bg-white pb-2">
@@ -35,19 +35,13 @@
     NPopconfirm,
     NInput,
     NInputGroup,
-    DataTableFilterState,
+    DataTableFilterState
   } from 'naive-ui'
-  import { deletePostApi, postAllApi } from '@/api/post'
-  import { RouterLink } from 'vue-router'
-  import dayjs from 'dayjs'
-  import { postAllModel } from '@/api/model/postModel'
-  import { PostStatusName } from '@/common/post-status'
-  import { getTagAllApi } from '@/api/tag'
+  import { deleteUserApi, getUserListApi } from '@/api/user'
 
   const keyword = ref('')
   let filterValues: DataTableFilterState = {
-    status: null,
-    tag: null
+    status: null
   }
 
   const columns: Array<DataTableColumn> = reactive([
@@ -55,65 +49,48 @@
       type: 'selection'
     },
     {
-      title: '标题',
+      title: '用户名',
       align: 'center',
-      key: 'title'
+      key: 'userName'
     },
     {
-      title: '状态',
+      title: '邮箱',
       align: 'center',
-      key: 'status',
-      filter: true,
-      filterMode: 'and',
-      filterMultiple: false,
-      filterOptions: [
-        {
-          label: '发布',
-          value: 'PUBLISH'
-        },
-        {
-          label: '草稿',
-          value: 'DRAFT'
-        }
-      ]
+      key: 'email'
     },
     {
-      title: '标签',
+      title: '权限',
       width: 140,
       align: 'center',
-      key: 'tags',
+      key: 'role',
       filter: true,
       filterMode: 'and',
       filterMultiple: false,
       render(row) {
-        return (row.tags as string[]).map((tagKey) => {
-          return h(
-            NTag,
-            {
-              style: {
-                marginRight: '6px'
-              },
-              round: true,
-              size: 'small',
-              type: 'info',
-              bordered: false
+        return h(
+          NTag,
+          {
+            style: {
+              marginRight: '6px'
             },
-            {
-              default: () => tagKey
-            }
-          )
-        })
+            round: true,
+            size: 'small',
+            type: 'info',
+            bordered: false
+          },
+          {
+            default: () => row.role
+          }
+        )
       }
-    },
-    {
-      title: '访问',
-      align: 'center',
-      key: 'count'
     },
     {
       title: '创建时间',
       align: 'center',
-      key: 'creatTime'
+      key: 'creatTime',
+      render() {
+        return h('div', '未开发')
+      }
     },
     {
       title: '操作',
@@ -122,21 +99,14 @@
       render(row) {
         return [
           h(
-            RouterLink,
+            NButton,
             {
-              to: './write?id=' + row.id
+              size: 'tiny',
+              type: 'info'
             },
-            () =>
-              h(
-                NButton,
-                {
-                  size: 'tiny',
-                  type: 'info'
-                },
-                {
-                  default: () => '编辑'
-                }
-              )
+            {
+              default: () => '查看'
+            }
           ),
           h(
             NPopconfirm,
@@ -174,44 +144,34 @@
   })
   const loading = ref(false)
   onBeforeMount(async () => {
-    let res = await Promise.all([getPostAll(1), await getTagAllApi()])
-    columns[3].filterOptions = res[1].data.map((item) => {
-      return {
-        label: item.name,
-        value: item.id
-      }
-    })
+    await getUserList(1)
   })
 
   //表格头部筛选结果
   const changeFiters = (filters: DataTableFilterState) => {
     filterValues = filters
-    getPostAll(1)
+    getUserList(1)
   }
   const rowKey = (e: { id: string }): number | string => e.id
 
   const handlePageChange = async (e: number) => {
-    await getPostAll(e)
+    await getUserList(e)
   }
 
   const del = async (id: string) => {
-    await deletePostApi(id)
+    await deleteUserApi(id)
     window.$message.success('删除成功')
-    await getPostAll(1)
+    await getUserList(1)
   }
-  const getPostAll = async (page: number) => {
+  const getUserList = async (page: number) => {
     loading.value = true
-    const res = await postAllApi({
+    const res = await getUserListApi({
       page,
       size: 50,
       keyword: keyword.value,
       ...filterValues
     })
-    data.value = res.data.data.map((item: postAllModel) => {
-      item.status = PostStatusName[item.status] as any
-      item.creatTime = dayjs(item.creatTime).format('YYYY-MM-DD HH:mm:ss')
-      return item
-    })
+    data.value = res.data.data
     pagination.pageCount = res.data.pageTotal
     pagination.pageSize = res.data.total
     loading.value = false
