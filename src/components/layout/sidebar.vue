@@ -33,13 +33,13 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, h, ref, Component } from 'vue'
+  import { computed, h, Component } from 'vue'
   import { RouterLink, RouteRecordRaw } from 'vue-router'
   import { NIcon, NLayoutSider, NMenu } from 'naive-ui'
   import type { MenuOption } from 'naive-ui'
   import { CodepenCircleFilled as BookIcon } from '@vicons/antd'
   import { userMenuStore } from '@/store/modules/app'
-  import router, { constantRoutes } from '@/router'
+  import { constantRoutes } from '@/router'
 
   const menus = constantRoutes.filter(
     (route) => route.name && !route.meta?.isHidden
