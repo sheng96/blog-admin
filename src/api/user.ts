@@ -1,5 +1,5 @@
 import http from '@/utils/axios'
-import { UserListModel } from '@/api/model/userModel'
+import { UserDetailModel, UserListModel } from '@/api/model/userModel'
 
 type dataRegister = {
   userName: string
@@ -38,5 +38,9 @@ export const getUserListApi = async (
     params
   })
 
-export const deleteUserApi = async (id: string) =>
+// 查询一个用户,返回ts类型为UserDetailModel
+export const getUserApi = async (id: number): Promise<UserDetailModel> =>
+  await http.get(`/user/${id}`)
+
+export const deleteUserApi = async (id: number) =>
   await http.delete(`/user/${id}`)

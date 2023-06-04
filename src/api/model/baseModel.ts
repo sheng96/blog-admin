@@ -25,4 +25,3 @@ export interface PagesBaseModel<T> {
   data: PagesModel<T[]>
   success: boolean
 }
-

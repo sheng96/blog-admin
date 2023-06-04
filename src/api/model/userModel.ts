@@ -1,10 +1,14 @@
-import { BasicPageParams, PagesBaseModel } from '@/api/model/baseModel'
+import { BaseModel, PagesBaseModel } from '@/api/model/baseModel'
+import { UserPermission } from '@/common/blog.config'
 export interface UserListData {
   avatar?: null
   email: string
   id: number
-  role: string
+  role: UserPermission
   userName: string
+  creatTime: string
 }
 
 export type UserListModel = PagesBaseModel<UserListData>
+
+export type UserDetailModel = BaseModel<UserListData>
