@@ -12,8 +12,8 @@
   </div>
   <div class="bg-white pb-2">
     <n-data-table
-      max-height="66vh"
       ref="table"
+      max-height="66vh"
       remote
       :columns="columns"
       :data="data"
@@ -24,38 +24,99 @@
       @update:filters="changeFiters"
     />
   </div>
+  <!--  弹框，展示用户的详情信息-->
+  <n-modal
+    v-model:show="showModal"
+    :title="userDetail.userName + '的详情信息'"
+    preset="dialog"
+  >
+    <div class="flex flex-col bg-white">
+      <div class="flex flex-row justify-between">
+        <div class="flex flex-col">
+          <div class="flex flex-row">
+            <div class="w-32">用户名：</div>
+            <div>{{ userDetail.userName }}</div>
+          </div>
+          <div class="flex flex-row">
+            <div class="w-32">邮箱：</div>
+            <div>{{ userDetail.email }}</div>
+          </div>
+          <div class="flex flex-row">
+            <div class="w-32">权限：</div>
+            <div>{{ getPermissionName(userDetail.role) }}</div>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex flex-row">
+            <div class="w-32">注册时间：</div>
+            <div>{{ userDetail.creatTime }}</div>
+          </div>
+          <!--          <div class="flex flex-row">-->
+          <!--            <div class="w-32">最后登录时间：</div>-->
+          <!--            <div>{{ userDetail.lastLoginTime }}</div>-->
+          <!--          </div>-->
+        </div>
+      </div>
+      <div class="flex flex-row justify-between">
+        <div class="flex flex-col">
+          <!--          <div class="flex flex-row">-->
+          <!--            <div class="w-32">个人简介：</div>-->
+          <!--            <div>{{ userDetail.introduction }}</div>-->
+          <!--          </div>-->
+          <!--          <div class="flex flex-row">-->
+          <!--            <div class="w-32">个人网站：</div>-->
+          <!--            <div>{{ userDetail.website }}</div>-->
+          <!--          </div>-->
+          <!--        </div>-->
+          <div class="flex flex-col">
+            <div class="flex flex-row">
+              <div class="w-32">头像：</div>
+              <div>
+                <img :src="userDetail.avatar" alt="" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </n-modal>
 </template>
 <script setup lang="ts">
   import { h, onBeforeMount, reactive, ref } from 'vue'
+  import { getPermissionName, UserPermission } from '@/common/blog.config'
   import {
-    DataTableColumn,
+    DataTableColumns,
     NButton,
     NDataTable,
     NTag,
     NPopconfirm,
     NInput,
     NInputGroup,
-    DataTableFilterState
+    DataTableFilterState,
+    NModal
   } from 'naive-ui'
-  import { deleteUserApi, getUserListApi } from '@/api/user'
+  import { deleteUserApi, getUserListApi, getUserApi } from '@/api/user'
+  import { UserListData } from '@/api/model/userModel'
+  import dayjs from 'dayjs'
 
   const keyword = ref('')
   let filterValues: DataTableFilterState = {
     status: null
   }
 
-  const columns: Array<DataTableColumn> = reactive([
+  const columns: DataTableColumns<UserListData> = reactive([
     {
       type: 'selection'
     },
     {
       title: '用户名',
-      align: 'center',
+      // align: 'center',
+      width: 180,
       key: 'userName'
     },
     {
       title: '邮箱',
-      align: 'center',
+      // align: 'center',
       key: 'email'
     },
     {
@@ -79,17 +140,17 @@
             bordered: false
           },
           {
-            default: () => row.role
+            default: () => getPermissionName(row.role)
           }
         )
       }
     },
     {
-      title: '创建时间',
+      title: '注册时间',
       align: 'center',
       key: 'creatTime',
-      render() {
-        return h('div', '未开发')
+      render(row) {
+        return h('div', {}, dayjs(row.creatTime).format('YYYY-MM-DD HH:mm:ss'))
       }
     },
     {
@@ -97,10 +158,14 @@
       align: 'center',
       key: 'auth',
       render(row) {
+        // 为按钮绑定事件
         return [
           h(
             NButton,
             {
+              onClick() {
+                getUser(row.id)
+              },
               size: 'tiny',
               type: 'info'
             },
@@ -112,7 +177,7 @@
             NPopconfirm,
             {
               onPositiveClick() {
-                del(row.id as string)
+                del(row.id)
               }
             },
             {
@@ -158,7 +223,7 @@
     await getUserList(e)
   }
 
-  const del = async (id: string) => {
+  const del = async (id: number) => {
     await deleteUserApi(id)
     window.$message.success('删除成功')
     await getUserList(1)
@@ -176,6 +241,25 @@
     pagination.pageSize = res.data.total
     loading.value = false
   }
+
+  //   创建用户数据变量，获取用户数据
+  const userDetail: UserListData = reactive({
+    id: 0,
+    userName: '',
+    email: '',
+    role: UserPermission.User,
+    creatTime: ''
+  })
+  const getUser = async (id: number) => {
+    const res = await getUserApi(id)
+    userDetail.id = res.data.id
+    userDetail.userName = res.data.userName
+    userDetail.email = res.data.email
+    userDetail.role = res.data.role
+    userDetail.creatTime = res.data.creatTime
+    showModal.value = true
+  }
+  const showModal = ref(false)
 </script>
 
 <style scoped>
