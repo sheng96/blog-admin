@@ -12,8 +12,8 @@
   </div>
   <div class="bg-white pb-2">
     <n-data-table
-      max-height="66vh"
       ref="table"
+      max-height="66vh"
       remote
       :columns="columns"
       :data="data"
@@ -28,29 +28,30 @@
 <script setup lang="ts">
   import { h, onBeforeMount, reactive, ref } from 'vue'
   import {
-    DataTableColumn,
+    DataTableColumns,
     NButton,
     NDataTable,
     NTag,
     NPopconfirm,
     NInput,
     NInputGroup,
-    DataTableFilterState,
+    DataTableFilterState
   } from 'naive-ui'
   import { deletePostApi, postAllApi } from '@/api/post'
   import { RouterLink } from 'vue-router'
   import dayjs from 'dayjs'
   import { postAllModel } from '@/api/model/postModel'
-  import { PostStatusName } from '@/common/post-status'
+  import { getStatusName } from '../../common/post-status'
   import { getTagAllApi } from '@/api/tag'
+  import { PostColumns } from '../../../types/post_list'
 
   const keyword = ref('')
   let filterValues: DataTableFilterState = {
-    status: null,
-    tag: null
+    status: [],
+    tag: []
   }
 
-  const columns: Array<DataTableColumn> = reactive([
+  const columns: DataTableColumns<PostColumns> = reactive([
     {
       type: 'selection'
     },
@@ -81,12 +82,12 @@
       title: '标签',
       width: 140,
       align: 'center',
-      key: 'tags',
+      key: 'tag',
       filter: true,
       filterMode: 'and',
       filterMultiple: false,
       render(row) {
-        return (row.tags as string[]).map((tagKey) => {
+        return (row.tag as string[]).map((tagKey) => {
           return h(
             NTag,
             {
@@ -142,7 +143,7 @@
             NPopconfirm,
             {
               onPositiveClick() {
-                del(row.id as string)
+                del(row.id)
               }
             },
             {
@@ -194,7 +195,7 @@
     await getPostAll(e)
   }
 
-  const del = async (id: string) => {
+  const del = async (id: number) => {
     await deletePostApi(id)
     window.$message.success('删除成功')
     await getPostAll(1)
@@ -207,11 +208,20 @@
       keyword: keyword.value,
       ...filterValues
     })
-    data.value = res.data.data.map((item: postAllModel) => {
-      item.status = PostStatusName[item.status] as any
-      item.creatTime = dayjs(item.creatTime).format('YYYY-MM-DD HH:mm:ss')
-      return item
-    })
+    data.value = res.data.data.map(
+      (
+        item: postAllModel
+      ): {
+        status: string
+        creatTime: string
+      } => {
+        return {
+          ...item,
+          status: getStatusName(item.status),
+          creatTime: dayjs(item.creatTime).format('YYYY-MM-DD HH:mm:ss')
+        }
+      }
+    )
     pagination.pageCount = res.data.pageTotal
     pagination.pageSize = res.data.total
     loading.value = false
