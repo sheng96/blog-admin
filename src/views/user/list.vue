@@ -72,7 +72,7 @@
             <div class="flex flex-row">
               <div class="w-32">头像：</div>
               <div>
-                <img :src="userDetail.avatar" alt="" />
+                <img :src="userDetail.avatar as string" alt="" />
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import { BaseModel, PagesBaseModel } from '@/api/model/baseModel'
 import { UserPermission } from '@/common/blog.config'
 export interface UserListData {
-  avatar?: null
+  avatar?: null | string
   email: string
   id: number
   role: UserPermission
