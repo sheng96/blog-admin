@@ -103,6 +103,6 @@ export const constantRoutes: RouteRecordRaw[] = [
   }
 ]
 export default createRouter({
-  history: createWebHistory('/admin/'),
+  history: createWebHistory(),
   routes: [...basicRoutes, ...constantRoutes]
 })
