@@ -1,7 +1,7 @@
 {
-  "name": "blog-typejs-admin",
+  "name": "blog-admin",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.1.1",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
