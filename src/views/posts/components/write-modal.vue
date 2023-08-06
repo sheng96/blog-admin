@@ -28,14 +28,6 @@
               :max="1"
               accept="image/*"
               :action="uploadFileUrl"
-              :default-file-list="[
-                {
-                  id: 'a',
-                  name: 'head',
-                  status: 'finished',
-                  url: 'http://127.0.0.1:8888/files/1685812256198.png'
-                }
-              ]"
               list-type="image-card"
               :custom-request="customRequest"
             >
@@ -44,7 +36,7 @@
           </n-form-item>
           <n-form-item label="标签：" path="user.name">
             <n-select
-              v-model:value="selectValue"
+              v-model:value="postForm.tag"
               :options="options"
               filterable
               max-tag-count="responsive"
@@ -92,7 +84,7 @@
   import type { UploadCustomRequestOptions } from 'naive-ui'
   import { creatTagApi, getTagAllApi } from '@/api/tag'
   import { uploadImagesApi } from '@/api/post'
-  import { ref, watch } from 'vue'
+  import { computed, ref, watch } from 'vue'
   import { PostStatus } from '@/common/post-status'
   //   弹框样式
   let bodyStyle = {
@@ -109,7 +101,7 @@
       content: string
       summary: string
       status: PostStatus
-      tag: number[]
+      tag: any[]
       cover: string
     }
   }
@@ -127,11 +119,10 @@
   watch(
     () => postForm.value.title,
     () => {
-      console.log('postForm.title改变了')
-
       emit('update:postForm', postForm.value)
     }
   )
+
   // 定义子组件的 emit
   const emit = defineEmits<{
     (e: 'update:showModal', value: boolean): void
@@ -145,12 +136,11 @@
   const route = useRoute()
 
   const router = useRouter()
-
-  const selectValue = ref([])
-
+  // 发布
   async function submit(status: PostStatus) {
     let tagId: number[] = []
-    for (const item of selectValue.value) {
+    for (const item of postForm.value.tag) {
+      console.log(typeof item === 'string')
       if (typeof item === 'string') {
         const newTags = await creatTagApi(item)
         tagId.push(newTags.data.id)
@@ -180,7 +170,7 @@
       }
     })
   }
-
+  // 标签数据
   let options = ref<{ label: string; value: number | string }[]>([])
 
   async function getTag() {
@@ -194,6 +184,25 @@
     })
   }
   await getTag()
+  // 通过计算属性获取
+  const tagIds = computed(() => {
+    const tag = props.postForm.tag
+    let result = options.value.filter((item) => {
+      return tag.find((value) => value === item.label)
+    })
+    return result.map((item) => item.value) as number[]
+  })
+  // 根据props的postForm.tag获取tagId
+  watch(
+    tagIds,
+    () => {
+      console.log(postForm.value.tag)
+      postForm.value.tag = tagIds.value
+    },
+    {
+      immediate: true
+    }
+  )
 
   //  上传图片
   const customRequest = async ({ file }: UploadCustomRequestOptions) => {
