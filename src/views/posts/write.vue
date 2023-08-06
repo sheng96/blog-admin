@@ -1,109 +1,40 @@
 <template>
-  <div class="flex justify-between mb-2">
-    <div class="text-xl text-black">{{ postForm.title }}</div>
-    <div>
-      <NButton>预览</NButton>
-      <NButton type="info" class="ml-2" @click="showModal = true">
-        发布</NButton
-      >
+  <div class="flex flex-col h-full">
+    <div class="flex flex-grow-0 justify-between mb-2 px-4 items-center">
+      <NInput
+        v-model:value="postForm.title"
+        class=""
+        placeholder="请输入标题"
+        size="large"
+        type="text"
+      />
+      <NButton class="ml-2 flex-grow-0" type="info" @click="updateSubPostForm">
+        发布
+      </NButton>
     </div>
-  </div>
-  <div class="h-full">
-    <NInput
-      v-model:value="postForm.title"
-      type="text"
-      placeholder="请输入标题"
-      size="large"
-      class="mb-5"
-    />
-    <!--    <div id="editor"></div>-->
     <Editor
-      :value="postForm.content"
-      :plugins="plugins"
       :locale="zhHans"
-      :uploadImages="uploadImages"
+      :plugins="plugins"
+      :upload-images="uploadImages"
+      :value="postForm.content"
+      class="h-full"
       @change="handleChange"
     ></Editor>
   </div>
-  <n-modal
-    v-model:show="showModal"
-    class="custom-card"
-    preset="card"
-    display-directive="show"
-    :style="bodyStyle"
-    title="文章发布"
-    size="huge"
-    :bordered="false"
-  >
-    <n-tabs type="card" :bar-width="28">
-      <n-tab-pane name="chap1" tab="常规">
-        <n-form
-          ref="formRef"
-          :label-width="84"
-          label-placement="left"
-          label-align="left"
-          size="large"
-        >
-          <n-form-item label="文章标题：" path="user.name">
-            <n-input v-model:value="postForm.title" placeholder="文章标题" />
-          </n-form-item>
-          <n-form-item label="标签：" path="user.name">
-            <n-select
-              v-model:value="selectValue"
-              filterable
-              multiple
-              max-tag-count="responsive"
-              tag
-              :options="options"
-              placeholder="请选择"
-            />
-          </n-form-item>
-          <n-form-item label="摘要：" path="user.name">
-            <n-input
-              v-model:value="postForm.summary"
-              type="textarea"
-              placeholder="文章标题"
-            />
-          </n-form-item>
-        </n-form>
-      </n-tab-pane>
-      <!--      <n-tab-pane name="chap2" tab="常规"></n-tab-pane>-->
-    </n-tabs>
-    <template #footer>
-      <div class="flex align-middle justify-end">
-        <NButton type="warning" @click="submit(statusEnum.DRAFT)"
-          >保存草稿</NButton
-        >
-        <NButton class="ml-2" type="info" @click="submit(statusEnum.PUBLISH)"
-          >发布</NButton
-        >
-      </div>
-    </template>
-  </n-modal>
+  <Write-Modal
+    ref="childrenRef"
+    v-model:show-modal="showModal"
+    v-model:post-form="postForm"
+  />
 </template>
 
-<script setup lang="ts">
-  import {
-    NButton,
-    NInput,
-    NModal,
-    NTabs,
-    NTabPane,
-    NForm,
-    NFormItem,
-    NSelect
-  } from 'naive-ui'
-  import { onMounted, reactive, ref } from 'vue'
+<script lang="ts" setup>
+  import { NButton, NInput } from 'naive-ui'
+  import { ref } from 'vue'
 
-  import { creatTagApi, getTagAllApi } from '@/api/tag'
-  import {
-    creatPostApi,
-    postDetailApi,
-    updatePostApi,
-    uploadImagesApi
-  } from '@/api/post'
-  import { statusEnum } from '@/api/model/postModel'
-  import { useRoute, useRouter } from 'vue-router'
+  import { getTagAllApi } from '@/api/tag'
+  import { postDetailApi, uploadImagesApi } from '@/api/post'
+  import { useRoute } from 'vue-router'
 
   import { Editor } from '@bytemd/vue-next'
   import breaks from '@bytemd/plugin-breaks'
@@ -121,6 +52,8 @@
   import gfm_zhHans from '@bytemd/plugin-gfm/locales/zh_Hans.json'
   import 'github-markdown-css/github-markdown.css'
   import 'highlight.js/styles/vs.css'
+  import WriteModal from './components/write-modal.vue'
+  import { PostStatus } from '@/common/post-status'
 
   const plugins = [
     breaks(),
@@ -132,25 +65,26 @@
     mermaid({ locale: mermaid_zhHans }),
     mediumZoom()
   ]
+
+  // 上传图片
   const uploadImages = async (files: File[]) => {
     let formData = new FormData()
     formData.append('files', files[0])
     let res: any = await uploadImagesApi(formData)
     return res.data.map((item: any) => {
+      console.log(item)
       return {
-        url: import.meta.env.VITE_BASE_URL + '/image/' + item.filename,
+        url: import.meta.env.VITE_BASE_URL + item.url,
         alt: item.originalname,
         title: item.originalname
       }
     })
   }
-  const bodyStyle = {
-    width: '600px'
-  }
   const showModal = ref(false)
   const selectValue = ref<any[]>([])
   let options = ref<{ label: string; value: number | string }[]>([])
   const route = useRoute()
+
   async function getTag() {
     options.value = []
     const tag = await getTagAllApi()
@@ -161,72 +95,50 @@
       })
     })
   }
+
   await getTag()
-  let postDetail: any
+  let postDetail: any = {}
   if (route.query.id) {
     const res = await postDetailApi(route.query.id as string)
     postDetail = res.data
-    selectValue.value = (postDetail.tags as any[]).filter((item) =>
+    selectValue.value = (postDetail.tag as any[]).filter((item) =>
       options.value.find((tag) => tag.label === item)
     )
   }
 
-  const postForm = reactive({
+  // 表单数据
+  const postForm = ref({
     title: postDetail?.title ?? '',
     content: postDetail?.content ?? '',
-    summary: postDetail?.summary ?? ''
+    id: postDetail?.id ?? '',
+    tag: postDetail?.tag ?? [],
+    summary: postDetail?.summary ?? '',
+    cover: postDetail?.cover ?? '',
+    status: postDetail?.status ?? PostStatus.PUBLISH
   })
 
-  onMounted(() => {})
-
   const handleChange = (value: string) => {
-    postForm.content = value
+    postForm.value.content = value
   }
 
-  //路由api
-  const router = useRouter()
-  async function submit(status: statusEnum) {
-    let tagId: number[] = []
-    for (const item of selectValue.value) {
-      if (typeof item === 'string') {
-        const newTags = await creatTagApi(item)
-        tagId.push(newTags.data.id)
-      } else {
-        tagId.push(item)
-      }
-    }
-    let data = {
-      title: postForm.title,
-      content: postForm.content,
-      contentHtml: '',
-      summary: postForm.summary,
-      status: status,
-      tags: tagId
-    }
-    if (route.query.id) {
-      await updatePostApi(route.query.id as string, data)
-    } else {
-      await creatPostApi(data)
-    }
-
-    showModal.value = false
-    // useMessage
-    window.$message.success('提交成功', {
-      //弹出关闭后开始跳转页面
-      onLeave: () => {
-        router.replace({ name: 'list' })
-      }
-    })
+  // 定义子组件的 ref
+  const childrenRef = ref<InstanceType<typeof WriteModal>>()
+  // 同步更新子组件的表单数据
+  const updateSubPostForm = () => {
+    childrenRef.value?.updatePostForm(postForm.value)
+    showModal.value = true
   }
 </script>
 
 <style scoped>
   :deep(.bytemd) {
-    height: calc(100vh - 200px);
+    height: 100%;
   }
+
   :deep(.markdown-body) ul li {
     list-style: disc;
   }
+
   :deep(.markdown-body) ol li {
     list-style: decimal;
   }

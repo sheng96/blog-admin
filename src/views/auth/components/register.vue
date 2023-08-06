@@ -85,7 +85,12 @@
       NButton,
       NIcon
     },
-    props: ['isLogin'],
+    props: {
+      isLogin: {
+        type: Boolean,
+        default: false
+      }
+    },
     emits: ['update:is-login'],
     setup(props: any, ctx: any) {
       const user = reactive({

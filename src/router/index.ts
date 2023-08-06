@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Login from '../views/auth/index.vue'
 import Layout from '../components/layout/index.vue'
 
@@ -71,9 +71,38 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       }
     ]
+  },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/user',
+    name: '用户',
+    children: [
+      {
+        path: 'user',
+        component: () => import('../views/user/list.vue'),
+        name: 'User',
+        meta: {
+          title: '用户列表'
+        }
+      }
+    ]
+  },
+  {
+    path: '/404',
+    component: () => import('../views/404.vue')
+  },
+
+  // 404 page must be placed at the end !!!
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/404',
+    meta: {
+      isHidden: true
+    }
   }
 ]
 export default createRouter({
-  history: createWebHashHistory('/admin/'),
+  history: createWebHistory(),
   routes: [...basicRoutes, ...constantRoutes]
 })
