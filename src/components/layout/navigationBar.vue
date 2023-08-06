@@ -62,4 +62,17 @@
   }
 </script>
 
-<style scoped></style>
+<style scoped>
+  .header {
+    display: flex;
+    border-bottom: 5px;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 30px;
+    margin-bottom: 10px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
+    position: relative;
+  }
+</style>

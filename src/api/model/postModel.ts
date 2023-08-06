@@ -1,7 +1,4 @@
-export enum statusEnum {
-  DRAFT = 'DRAFT',
-  PUBLISH = 'PUBLISH'
-}
+import { PostStatus } from '@/common/post-status'
 
 export interface UserModel {
   userName: string
@@ -15,7 +12,7 @@ export interface postAllModel {
   contentHtml: string
   summary: string
   count: number
-  status: statusEnum
+  status: PostStatus
   creatTime: string
   updateTime: string
   tags: string[]

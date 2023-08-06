@@ -22,7 +22,6 @@ export interface PagesModel<K> {
 }
 export interface PagesBaseModel<T> {
   code: number
-  data: PagesModel<T>
+  data: PagesModel<T[]>
   success: boolean
 }
-

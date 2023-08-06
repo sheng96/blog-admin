@@ -1,8 +1,8 @@
-import {
-  LoadingBarInst,
-  DialogApiInjection,
-  MessageApiInjection,
-  NotificationApiInjection
+import type {
+  LoadingBarApi,
+  DialogApi,
+  MessageApi,
+  NotificationApi
 } from 'naive-ui'
 
 declare module '*.vue' {
@@ -12,9 +12,18 @@ declare module '*.vue' {
 }
 declare global {
   interface Window {
-    $loadingBar: LoadingBarInst
-    $dialog: DialogApiInjection
-    $message: MessageApiInjection
-    $notification: NotificationApiInjection
+    $loadingBar: LoadingBarApi
+    $dialog: DialogApi
+    $message: MessageApi
+    $notification: NotificationApi
+  }
+}
+
+// shims-vue.d.ts
+declare module '@vue/runtime-core' {
+  interface ComponentCustomProperties {
+    $env: {
+      VITE_BASE_URL: string
+    }
   }
 }
