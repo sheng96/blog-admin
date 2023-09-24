@@ -209,7 +209,7 @@
     let formData = new FormData()
     formData.append('files', file.file as File)
     let res: any = await uploadImagesApi(formData)
-    postForm.value.cover = import.meta.env.VITE_BASE_URL + res.data[0].url
+    postForm.value.cover = res.data[0].url
     console.log(res)
   }
 </script>
