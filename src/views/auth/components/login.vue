@@ -50,7 +50,14 @@
 </template>
 
 <script lang="ts">
-  import { InputHTMLAttributes, reactive, ref } from 'vue'
+  import {
+    InputHTMLAttributes,
+    onActivated,
+    onDeactivated,
+    onUnmounted,
+    reactive,
+    ref
+  } from 'vue'
   import { loginApi } from '@/api/user'
   import { userStore } from '@/store/modules/user'
   import {
@@ -130,7 +137,21 @@
       const inputProps: InputHTMLAttributes = {
         autocomplete: 'on'
       }
+      // 监听回车事件
+      const handleEnter = (e: KeyboardEvent) => {
+        if (e.key === 'Enter') {
+          methods.login(e)
+        }
+      }
+      // keep-alive 有两个生命周期钩子，activated 和 deactivated
+      onActivated(() => {
+        window.addEventListener('keydown', handleEnter)
+      })
 
+      // keep-alive 时，卸载组件时，移除事件监听
+      onDeactivated(() => {
+        window.removeEventListener('keydown', handleEnter)
+      })
       return {
         user,
         ...methods,

@@ -140,7 +140,6 @@
   async function submit(status: PostStatus) {
     let tagId: number[] = []
     for (const item of postForm.value.tag) {
-      console.log(typeof item === 'string')
       if (typeof item === 'string') {
         const newTags = await creatTagApi(item)
         tagId.push(newTags.data.id)
@@ -151,10 +150,11 @@
     let data = {
       title: props.postForm.title,
       content: props.postForm.content,
-      summary: props.postForm.summary,
+      summary: postForm.value.summary,
       status: status,
       tag: tagId
     }
+    console.log(data, postForm.value.summary)
     if (route.query.id) {
       await updatePostApi(route.query.id as string, data)
     } else {
@@ -209,7 +209,7 @@
     let formData = new FormData()
     formData.append('files', file.file as File)
     let res: any = await uploadImagesApi(formData)
-    postForm.value.cover = import.meta.env.VITE_BASE_URL + res.data[0].url
+    postForm.value.cover = res.data[0].url
     console.log(res)
   }
 </script>
