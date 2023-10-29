@@ -74,7 +74,7 @@
     return res.data.map((item: any) => {
       console.log(item)
       return {
-        url: import.meta.env.VITE_BASE_URL + item.url,
+        url: item.url,
         alt: item.originalname,
         title: item.originalname
       }
